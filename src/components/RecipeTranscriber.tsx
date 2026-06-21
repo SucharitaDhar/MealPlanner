@@ -238,11 +238,9 @@ export default function RecipeTranscriber({ onSaveRecipe }: { onSaveRecipe: (rec
               {loading ? "Transcribing..." : "Transcribe →"}
             </button>
           </div>
-          {!apiKey && (
-            <p className="text-xs text-muted" style={{ color: "var(--coral)", fontWeight: 600 }}>
-              💡 No API key? Try a demo recipe below, or add your Gemini API key in Settings.
-            </p>
-          )}
+          <p className="text-xs text-muted">
+            💡 Try a demo recipe below if you want to explore sample calculations instantly.
+          </p>
         </div>
       )}
 
@@ -268,24 +266,20 @@ export default function RecipeTranscriber({ onSaveRecipe }: { onSaveRecipe: (rec
               disabled={!rawText.trim() || !pasteTitle.trim()}
               style={{ opacity: !rawText.trim() || !pasteTitle.trim() ? 0.5 : 1 }}
             >
-              💾 Save to Library
+              💾 Quick Save (No Calories)
             </button>
-            {apiKey && (
-              <button
-                className="btn btn-secondary"
-                onClick={transcribeFromText}
-                disabled={loading || !rawText.trim()}
-                style={{ opacity: loading || !rawText.trim() ? 0.5 : 1 }}
-              >
-                {loading ? "Transcribing..." : "✨ Transcribe with AI instead"}
-              </button>
-            )}
+            <button
+              className="btn btn-secondary"
+              onClick={transcribeFromText}
+              disabled={loading || !rawText.trim()}
+              style={{ opacity: loading || !rawText.trim() ? 0.5 : 1 }}
+            >
+              {loading ? "Transcribing..." : "✨ Transcribe with AI (Calorie Aware)"}
+            </button>
           </div>
-          {!apiKey && (
-            <p className="text-xs text-muted">
-              💡 Want AI to auto-parse ingredients and calories? Add your Gemini API key in Settings.
-            </p>
-          )}
+          <p className="text-xs text-muted">
+            💡 Using <strong>Transcribe with AI</strong> will automatically estimate calories/macros for all ingredients using Gemini.
+          </p>
         </div>
       )}
 
