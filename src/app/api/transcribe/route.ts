@@ -119,7 +119,6 @@ export async function POST(req: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `
     You are an expert culinary AI. Extract and structure a recipe from this text into clean JSON.
@@ -157,16 +156,30 @@ export async function POST(req: NextRequest) {
     3. Return ONLY the JSON object, no markdown fences.
     `;
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json"
-      }
-    });
+    const modelsToTry = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-1.5-flash"];
+    let responseText = "";
+    let lastError: any = null;
 
-    const responseText = result.response.text();
+    for (const modelName of modelsToTry) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        });
+        responseText = result.response.text();
+        if (responseText) break;
+      } catch (err) {
+        lastError = err;
+        console.warn(`Gemini model ${modelName} failed, trying next fallback...`, err);
+      }
+    }
+
     if (!responseText) {
-      throw new Error("Empty response from AI model.");
+      const errMsg = lastError instanceof Error ? lastError.message : String(lastError);
+      return NextResponse.json({ error: `Gemini AI Error: ${errMsg}` }, { status: 400 });
     }
 
     const recipe = JSON.parse(responseText.trim());
