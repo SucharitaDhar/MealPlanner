@@ -336,8 +336,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       // 3. Update local state
       const frontendRecipe = mapDbRecipeToFrontend(newRecipe);
       setRecipes((prev) => [...prev, frontendRecipe]);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error saving recipe to database:", err);
+      alert("Error saving recipe: " + (err?.message || String(err)));
     }
   };
 
